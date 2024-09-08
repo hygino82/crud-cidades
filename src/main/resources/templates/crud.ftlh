@@ -38,16 +38,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Coronel Vivida</td>
-                    <td>Paraná</td>
-                    <td>
-                        <div class="d-flex d-justify-content-center">
-                            <a class="btn btn-warning mr-3">ALTERAR</a>
-                            <a class="btn btn-danger">EXCLUIR</a>
-                        </div>
-                    </td>
-                </tr>
+            <#list listaCidades as cidade>
+            <tr>
+                <td>${cidade.nome}</td>
+                <td>${cidade.estado}</td>
+                <td>
+                    <div class="d-flex d-justify-content-center">
+                        <a class="btn btn-warning mr-3">ALTERAR</a>
+                        <a class="btn btn-danger">EXCLUIR</a>
+                    </div>
+                </td>
+            </tr>
+            </#list>
+
             </tbody>
         </table>
     </div>
