@@ -5,12 +5,13 @@ import java.util.Set;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import jakarta.validation.Valid;
 
 @Controller
 public class CidadeController {
@@ -29,9 +30,22 @@ public class CidadeController {
     }
 
     @PostMapping("/criar")
-    public String criar(Cidade cidade) {
+    public String criar(@Valid Cidade cidade, BindingResult validacao, Model memoria) {
+        if (validacao.hasErrors()) {
+            validacao
+                    .getFieldErrors()
+                    .forEach(
+                            error -> memoria.addAttribute(
+                                    error.getField(),
+                                    error.getDefaultMessage()));
+            memoria.addAttribute("nomeInformado", cidade.getNome());
+            memoria.addAttribute("estadoInformado", cidade.getEstado());
+            memoria.addAttribute("listaCidades", cidades);
 
-        cidades.add(cidade);
+            return "/crud";
+        } else {
+            cidades.add(cidade);
+        }
 
         return "redirect:/";
     }
@@ -54,33 +68,33 @@ public class CidadeController {
             Model memoria) {
 
         var cidadeAtual = cidades.stream()
-        .filter(
-                cidade -> cidade.getNome().equals(nome) &&
-                cidade.getEstado().equals(estado)
-                ).findAny();
+                .filter(
+                        cidade -> cidade.getNome().equals(nome) &&
+                                cidade.getEstado().equals(estado))
+                .findAny();
 
-                if(cidadeAtual.isPresent()){
-                    memoria.addAttribute("cidadeAtual", cidadeAtual.get());
-                    memoria.addAttribute("listaCidades", cidades);
-                }
+        if (cidadeAtual.isPresent()) {
+            memoria.addAttribute("cidadeAtual", cidadeAtual.get());
+            memoria.addAttribute("listaCidades", cidades);
+        }
 
         return "/crud";
     }
 
     @PostMapping("/alterar")
     public String alterar(
-        @RequestParam String nomeAtual,
-        @RequestParam String estadoAtual,
-        Cidade cidade
-    ) {
-        
-        cidades.removeIf(
-                cidadeAtual -> 
-                            cidadeAtual.getNome().equals(nomeAtual) &&
-                            cidadeAtual.getEstado().equals(estadoAtual));
+            @RequestParam String nomeAtual,
+            @RequestParam String estadoAtual,
+            Cidade cidade,
+            BindingResult validacao,
+            Model memoria) {
 
-        criar(cidade);
+        cidades.removeIf(
+                cidadeAtual -> cidadeAtual.getNome().equals(nomeAtual) &&
+                        cidadeAtual.getEstado().equals(estadoAtual));
+
+        criar(cidade, validacao, memoria);
         return "redirect:/";
     }
-    
+
 }
