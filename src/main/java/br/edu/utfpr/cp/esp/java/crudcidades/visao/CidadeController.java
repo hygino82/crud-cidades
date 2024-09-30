@@ -37,7 +37,9 @@ public class CidadeController {
                     .forEach(
                             error -> memoria.addAttribute(
                                     error.getField(),
-                                    error.getDefaultMessage()));
+                                    error.getDefaultMessage())
+                    );
+                    
             memoria.addAttribute("nomeInformado", cidade.getNome());
             memoria.addAttribute("estadoInformado", cidade.getEstado());
             memoria.addAttribute("listaCidades", cidades);

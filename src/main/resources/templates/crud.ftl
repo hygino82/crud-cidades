@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
@@ -23,24 +23,37 @@
                 <input type="hidden" name="nomeAtual" value="${(cidadeAtual.nome)!}"/>
                 <input type="hidden" name="estadoAtual" value="${(cidadeAtual.estado)!}"/>
             <#else>
-                <form action="/criar" method="POST" novalidate>
+                <form action="/criar" method="POST" class="needs-validation" novalidate>
             </#if>
         
             <div class="form-group">
                 <label for="nome">Cidade:</label>
-                <input required value="${(cidadeAtual.nome)!}${(nomeInformado)!}" name="nome" type="text" class="form-control ${(nome??)?then('is-invalid','')}" 
-                placeholder="Informe o nome da cidade" id="nome">
-                <div class ="invalid-feedback"> 
+                <input 
+                    value="${(cidadeAtual.nome)!}${nomeInformado!}" 
+                    name="nome" 
+                    type="text" 
+                    class="form-control ${(nome??)?then('is-invalid', '')}" 
+                    placeholder="Informe o nome da cidade" 
+                    id="nome">
+                
+                <div class="invalid-feedback">
                     ${nome!}
                 </div>
             </div>
+
             <div class="form-group">
                 <label for="estado">Estado:</label>
-                <input  maxlength="2" required value="${(cidadeAtual.estado)!}${(estadoInformado)!}" name="estado" type="text" class="form-control ${(estado??)?then('is-invalid','')}"  placeholder="Informe o estado ao qual a cidade pertence"
+                <input 
+                    value="${(cidadeAtual.estado)!}${estadoInformado!}" 
+                    name="estado" 
+                    type="text" 
+                    class="form-control ${(estado??)?then('is-invalid', '')}" 
+                    placeholder="Informe o estado ao qual a cidade pertence"
                     id="estado">
-                <div class ="invalid-feedback"> 
+
+                <div class="invalid-feedback">
                     ${estado!}
-                </div>    
+                </div>
             </div>
 
             <#if cidadeAtual??>

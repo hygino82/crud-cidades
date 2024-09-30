@@ -18,11 +18,11 @@ public final class Cidade {
         this.estado = estado;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
     public String getEstado() {
         return estado;
+    }
+
+    public String getNome() {
+        return nome;
     }
 }
