@@ -28,13 +28,15 @@ public final class Cidade {
 
     public CidadeEntidade clonar() {
         var cidadeEntidade = new CidadeEntidade();
+
         cidadeEntidade.setNome(this.getNome());
-        cidadeEntidade.setEstado(this.estado);
+        cidadeEntidade.setEstado(this.getEstado());
 
         return cidadeEntidade;
     }
 
-    public Cidade clonar(CidadeEntidade cidade) {
+    public static Cidade clonar(CidadeEntidade cidade) {
+
         return new Cidade(cidade.getNome(), cidade.getEstado());
     }
 }
