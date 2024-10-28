@@ -1,4 +1,4 @@
-package br.edu.utfpr.cp.esp.java.crudcidades.cidade;
+package br.edu.utfpr.cp.espjava.crudcidades.cidade;
 
 import java.util.stream.Collectors;
 
@@ -104,3 +104,4 @@ public class CidadeController {
             return "redirect:/";
     }
 }
+

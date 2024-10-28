@@ -1,4 +1,4 @@
-package br.edu.utfpr.cp.esp.java.crudcidades.cidade;
+package br.edu.utfpr.cp.espjava.crudcidades.cidade;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
