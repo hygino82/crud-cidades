@@ -1,0 +1,6 @@
+{
+    "java.compile.nullAnalysis.mode": "disabled",
+    "files.associations": {
+        "*.ftl": "html" // ou a linguagem que você deseja associar
+    }
+}
