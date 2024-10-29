@@ -1,6 +1,5 @@
-package br.edu.utfpr.cp.espjava.usuario;
+package br.edu.utfpr.cp.espjava.crudcidades.usuario;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,8 +14,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table
 public class Usuario implements UserDetails {
 
     @Id
@@ -29,39 +30,41 @@ public class Usuario implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> papeis;
 
-    public Usuario() {
-    }
-
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getNome() {
         return nome;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public List<String> getPapeis() {
+        return papeis;
     }
 
     public String getSenha() {
         return senha;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public List<String> getPapeis() {
-        return papeis;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public void setPapeis(List<String> papeis) {
         this.papeis = papeis;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.nome;
     }
 
     @Override
@@ -78,8 +81,13 @@ public class Usuario implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        return this.nome;
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
     @Override
@@ -89,16 +97,6 @@ public class Usuario implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
         return true;
     }
 }
