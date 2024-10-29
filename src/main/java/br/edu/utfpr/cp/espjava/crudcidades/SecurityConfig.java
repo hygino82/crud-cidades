@@ -1,7 +1,9 @@
 package br.edu.utfpr.cp.espjava.crudcidades;
 
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,11 +21,11 @@ public class SecurityConfig {
 
         return http
                 .authorizeHttpRequests(
-                    auth -> {
-                        auth.requestMatchers("/").hasAnyRole("listar", "admin");
-                        auth.requestMatchers("/criar", "/excluir", "/preparaAlterar", "/alterar").hasRole("admin");
-                        auth.anyRequest().denyAll();
-                })
+                        auth -> {
+                            auth.requestMatchers("/").hasAnyRole("listar", "admin");
+                            auth.requestMatchers("/criar", "/excluir", "/preparaAlterar", "/alterar").hasRole("admin");
+                            auth.anyRequest().denyAll();
+                        })
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(form -> form.loginPage("/login.html").permitAll())
                 .logout(LogoutConfigurer::permitAll)
@@ -34,5 +36,10 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder cifrador() {
         return new BCryptPasswordEncoder();
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void printSenhas() {
+        System.out.println(this.cifrador().encode("test123"));
     }
 }
