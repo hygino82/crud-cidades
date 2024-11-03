@@ -1,14 +1,21 @@
 package br.edu.utfpr.cp.espjava.crudcidades.cidade;
 
+import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -21,34 +28,47 @@ public class CidadeController {
     }
 
     @GetMapping("/")
-    public String listar(Model memoria) {
+    public String listar(
+            Model memoria,
+            Principal usuario,
+            HttpSession sessao,
+            HttpServletResponse response) {
+
+        response.addCookie(new Cookie("listar", LocalDateTime.now().toString()));
 
         memoria.addAttribute("listaCidades", repository
-                                                    .findAll()
-                                                    .stream()
-                                                    .map(Cidade::clonar)
-                                                    .collect(Collectors.toList()));
+                .findAll()
+                .stream()
+                .map(Cidade::clonar)
+                .collect(Collectors.toList()));
 
+        String nomeUsuario = usuario.getName();
+        sessao.setAttribute("usuarioAtual", nomeUsuario);
+        memoria.addAttribute("usuarioAtual", nomeUsuario); // Adicionando diretamente ao modelo
         return "/crud";
     }
 
     @PostMapping("/criar")
-    public String criar(@Valid Cidade cidade, BindingResult validacao, Model memoria) {
+    public String criar(
+            @Valid Cidade cidade,
+            BindingResult validacao,
+            Model memoria,
+            HttpServletResponse response) {
+
+        response.addCookie(new Cookie("criar", LocalDateTime.now().toString()));
 
         if (validacao.hasErrors()) {
             validacao
-                .getFieldErrors()
-                .forEach(error -> 
-                        memoria.addAttribute(
-                            error.getField(), 
-                            error.getDefaultMessage())
-                        );
+                    .getFieldErrors()
+                    .forEach(error -> memoria.addAttribute(
+                            error.getField(),
+                            error.getDefaultMessage()));
 
-                memoria.addAttribute("nomeInformado", cidade.getNome());
-                memoria.addAttribute("estadoInformado", cidade.getEstado());
-                memoria.addAttribute("listaCidades", repository.findAll());
-                
-                return ("/crud");
+            memoria.addAttribute("nomeInformado", cidade.getNome());
+            memoria.addAttribute("estadoInformado", cidade.getEstado());
+            memoria.addAttribute("listaCidades", repository.findAll());
+
+            return ("/crud");
         } else {
             repository.save(cidade.clonar());
         }
@@ -58,9 +78,12 @@ public class CidadeController {
 
     @GetMapping("/excluir")
     public String excluir(
-            @RequestParam String nome, 
-            @RequestParam String estado) {
-        
+            @RequestParam String nome,
+            @RequestParam String estado,
+            HttpServletResponse response) {
+
+        response.addCookie(new Cookie("excluir", LocalDateTime.now().toString()));
+
         var cidadeEstadoEncontrada = repository.findByNomeAndEstado(nome, estado);
 
         cidadeEstadoEncontrada.ifPresent(repository::delete);
@@ -70,38 +93,46 @@ public class CidadeController {
 
     @GetMapping("/preparaAlterar")
     public String preparaAlterar(
-        @RequestParam String nome, 
-        @RequestParam String estado,
-        Model memoria) {
+            @RequestParam String nome,
+            @RequestParam String estado,
+            Model memoria) {
 
-            var cidadeAtual = repository.findByNomeAndEstado(nome, estado);
+        var cidadeAtual = repository.findByNomeAndEstado(nome, estado);
 
-            cidadeAtual.ifPresent(cidadeEncontrada -> {
-                memoria.addAttribute("cidadeAtual", cidadeEncontrada);
-                memoria.addAttribute("listaCidades", repository.findAll());
-            });
+        cidadeAtual.ifPresent(cidadeEncontrada -> {
+            memoria.addAttribute("cidadeAtual", cidadeEncontrada);
+            memoria.addAttribute("listaCidades", repository.findAll());
+        });
 
-            return "/crud";
+        return "/crud";
     }
 
     @PostMapping("/alterar")
     public String alterar(
-        @RequestParam String nomeAtual, 
-        @RequestParam String estadoAtual,
-        Cidade cidade) {
+            @RequestParam String nomeAtual,
+            @RequestParam String estadoAtual,
+            Cidade cidade,
+            HttpServletResponse response) {
 
-            var cidadeAtual = repository.findByNomeAndEstado(nomeAtual, estadoAtual);
+        response.addCookie(new Cookie("alterar", LocalDateTime.now().toString()));
 
-            if (cidadeAtual.isPresent()) {
-                
-                var cidadeEncontrada = cidadeAtual.get();
-                cidadeEncontrada.setNome(cidade.getNome());
-                cidadeEncontrada.setEstado(cidade.getEstado());
+        var cidadeAtual = repository.findByNomeAndEstado(nomeAtual, estadoAtual);
 
-                repository.saveAndFlush(cidadeEncontrada);
-            }
+        if (cidadeAtual.isPresent()) {
 
-            return "redirect:/";
+            var cidadeEncontrada = cidadeAtual.get();
+            cidadeEncontrada.setNome(cidade.getNome());
+            cidadeEncontrada.setEstado(cidade.getEstado());
+
+            repository.saveAndFlush(cidadeEncontrada);
+        }
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/mostrar")
+    @ResponseBody
+    public String mostraCookie(@CookieValue String listar) {
+        return "Ultimo acesso ao metodo listar(): " + listar;
     }
 }
-

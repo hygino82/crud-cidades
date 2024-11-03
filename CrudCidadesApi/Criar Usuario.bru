@@ -1,0 +1,22 @@
+meta {
+  name: Criar Usuario
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/usuario/criar
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nome": "hygino",
+    "senha": "89631139",
+    "papeis": [
+      "listar",
+      "admin"
+    ]
+  }
+}
